@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Categories · ExpenseSync{% endblock %}
+{% block content %}
+<div class="page-head"><div><p class="eyebrow">ORGANIZATION</p><h1>Categories</h1></div></div>
+<div class="dashboard-grid">
+<section class="card">
+<h2>Add Category</h2>
+<form method="post" class="inline-form"><input name="name" required placeholder="Category name"><button class="button" type="submit">Add</button></form>
+</section>
+<section class="card">
+<h2>Category Totals</h2>
+{% if totals %}
+{% for row in totals %}
+<div class="category-row"><span>{{ row["category"] }}</span><strong>₹{{ "%.2f"|format(row["total"]) }}</strong></div>
+{% endfor %}
+{% else %}<div class="empty">No spending data yet.</div>{% endif %}
+</section>
+</div>
+<div class="card category-list">
+<h2>Available Categories</h2>
+{% for c in categories %}<span class="tag">{{ c["name"] }}</span>{% endfor %}
+</div>
+{% endblock %}

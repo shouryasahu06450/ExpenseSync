@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Expenses · ExpenseSync{% endblock %}
+{% block content %}
+<div class="page-head">
+    <div><p class="eyebrow">TRANSACTIONS</p><h1>All Expenses</h1></div>
+    <a class="button" href="{{ url_for('add') }}">+ Add Expense</a>
+</div>
+
+<form class="filters card" method="get">
+    <input name="search" placeholder="Search title or note..." value="{{ search }}">
+    <select name="category">
+        <option value="">All categories</option>
+        {% for c in categories %}
+        <option value="{{ c['name'] }}" {% if selected_category == c['name'] %}selected{% endif %}>{{ c['name'] }}</option>
+        {% endfor %}
+    </select>
+    <input type="date" name="start_date" value="{{ start_date }}">
+    <input type="date" name="end_date" value="{{ end_date }}">
+    <button class="button" type="submit">Filter</button>
+    <a class="button secondary" href="{{ url_for('expenses') }}">Reset</a>
+</form>
+
+<div class="card table-card">
+{% if expenses %}
+<table>
+<thead><tr><th>Expense</th><th>Category</th><th>Date</th><th>Amount</th><th>Actions</th></tr></thead>
+<tbody>
+{% for e in expenses %}
+<tr>
+    <td><strong>{{ e["title"] }}</strong>{% if e["note"] %}<small>{{ e["note"] }}</small>{% endif %}</td>
+    <td><span class="tag">{{ e["category"] }}</span></td>
+    <td>{{ e["expense_date"] }}</td>
+    <td class="amount">₹{{ "%.2f"|format(e["amount"]) }}</td>
+    <td class="actions">
+        <a href="{{ url_for('edit', expense_id=e['id']) }}">Edit</a>
+        <form method="post" action="{{ url_for('delete', expense_id=e['id']) }}" onsubmit="return confirm('Delete this expense?')">
+            <button class="link-danger" type="submit">Delete</button>
+        </form>
+    </td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% else %}
+<div class="empty">No expenses match your filters.</div>
+{% endif %}
+</div>
+{% endblock %}

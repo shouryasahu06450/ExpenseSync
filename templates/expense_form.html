@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}{{ "Edit" if expense else "Add" }} Expense · ExpenseSync{% endblock %}
+{% block content %}
+<div class="form-wrap">
+<div class="page-head"><div><p class="eyebrow">TRANSACTION</p><h1>{{ "Edit Expense" if expense else "Add Expense" }}</h1></div></div>
+<form class="card form-card" method="post">
+    <label>Title<input name="title" required value="{{ expense['title'] if expense else '' }}" placeholder="e.g. Grocery shopping"></label>
+    <label>Amount<input type="number" name="amount" step="0.01" min="0.01" required value="{{ expense['amount'] if expense else '' }}" placeholder="0.00"></label>
+    <label>Category<select name="category" required>
+        {% for c in categories %}
+        <option value="{{ c['name'] }}" {% if expense and expense['category']==c['name'] %}selected{% endif %}>{{ c['name'] }}</option>
+        {% endfor %}
+    </select></label>
+    <label>Date<input type="date" name="date" required value="{{ expense['expense_date'] if expense else '' }}"></label>
+    <label>Note<textarea name="note" rows="4" placeholder="Optional note">{{ expense['note'] if expense else '' }}</textarea></label>
+    <div class="form-actions"><a class="button secondary" href="{{ url_for('expenses') }}">Cancel</a><button class="button" type="submit">{{ "Update" if expense else "Save Expense" }}</button></div>
+</form>
+</div>
+{% endblock %}

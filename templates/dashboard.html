@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · ExpenseSync{% endblock %}
+{% block content %}
+<div class="page-head">
+    <div>
+        <p class="eyebrow">PERSONAL FINANCE</p>
+        <h1>Expense Dashboard</h1>
+        <p class="muted">Track where your money goes.</p>
+    </div>
+    <a class="button" href="{{ url_for('add') }}">+ Add Expense</a>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card"><span>Total Spent</span><strong>₹{{ "%.2f"|format(stats.total) }}</strong></div>
+    <div class="stat-card"><span>This Month</span><strong>₹{{ "%.2f"|format(stats.month_total) }}</strong></div>
+    <div class="stat-card"><span>Transactions</span><strong>{{ stats.count }}</strong></div>
+    <div class="stat-card"><span>Top Category</span><strong>{{ stats.top_category }}</strong></div>
+</div>
+
+<div class="dashboard-grid">
+    <section class="card chart-card">
+        <div class="card-head"><h2>Spending by Category</h2></div>
+        <canvas id="categoryChart"></canvas>
+        <div id="chartData"
+             data-labels='{{ stats.category_labels|tojson }}'
+             data-values='{{ stats.category_values|tojson }}'></div>
+    </section>
+
+    <section class="card">
+        <div class="card-head">
+            <h2>Recent Expenses</h2>
+            <a href="{{ url_for('expenses') }}">View all</a>
+        </div>
+        {% if stats.recent %}
+        <div class="recent-list">
+            {% for item in stats.recent %}
+            <div class="recent-row">
+                <div>
+                    <strong>{{ item["title"] }}</strong>
+                    <small>{{ item["category"] }} · {{ item["expense_date"] }}</small>
+                </div>
+                <b>₹{{ "%.2f"|format(item["amount"]) }}</b>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+            <div class="empty">No expenses yet. Add your first transaction.</div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+const data = document.getElementById("chartData");
+const labels = JSON.parse(data.dataset.labels);
+const values = JSON.parse(data.dataset.values);
+new Chart(document.getElementById("categoryChart"), {
+    type: "bar",
+    data: { labels, datasets: [{ label: "Spent (₹)", data: values, borderWidth: 1 }] },
+    options: { responsive: true, maintainAspectRatio: false }
+});
+</script>
+{% endblock %}
